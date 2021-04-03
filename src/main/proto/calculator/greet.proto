@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package calculator;
+
+option java_package = "com.proto.calculator";
+option java_multiple_files = true;
+
+message Calculator{
+  int32 factor = 1;
+}
+
+message CalculatorManyTimesRequest{
+  Calculator calculator = 1;
+}
+
+message CalculatorManyTimesResponse{
+  int32 result = 1;
+}
+
+service CalculatorService{
+  //Server Streaming
+  rpc CalculatorManyTime(CalculatorManyTimesRequest) returns (stream CalculatorManyTimesResponse){};
+}
