@@ -10,7 +10,7 @@ import java.util.List;
 public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServiceImplBase {
     @Override
     public void calculatorManyTime(CalculatorManyTimesRequest request, StreamObserver<CalculatorManyTimesResponse> responseObserver) {
-        int number = request.getCalculator().getFactor();
+        var number = request.getCalculator().getFactor();
         int divisor = 2;
         while (number > 1) {
             if (number % divisor == 0) {
@@ -46,7 +46,7 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
             public void onCompleted() {
                 responseObserver.onNext(ComputeAverageResponse
                         .newBuilder()
-                        .setAverage(result.stream().mapToDouble(a -> a).average().getAsDouble())
+                        .setAverage(result.stream().mapToDouble(a -> a).average().orElse(0))
                         .build());
                 responseObserver.onCompleted();
             }

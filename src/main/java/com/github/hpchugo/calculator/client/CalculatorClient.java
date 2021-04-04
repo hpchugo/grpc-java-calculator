@@ -47,7 +47,7 @@ public class CalculatorClient {
     private void doAverageClientStreamingCall(ManagedChannel channel) {
         CalculatorServiceGrpc.CalculatorServiceStub asyncClient = CalculatorServiceGrpc.newStub(channel);
         CountDownLatch latch = new CountDownLatch(1);
-        StreamObserver<ComputeAverageRequest> requestObserver = asyncClient.computeAverage(new StreamObserver<ComputeAverageResponse>() {
+        StreamObserver<ComputeAverageRequest> requestObserver = asyncClient.computeAverage(new StreamObserver<>() {
             @Override
             public void onNext(ComputeAverageResponse value) {
                 System.out.println("Received a response from the server");
@@ -68,7 +68,7 @@ public class CalculatorClient {
 
         List<Integer> numbers = Arrays.asList(3, 21, 15, 9);
         numbers.forEach(number -> {
-            System.out.println(String.format("Sending to server number %d", number));
+            System.out.printf("Sending to server number %d%n", number);
             requestObserver.onNext(ComputeAverageRequest.newBuilder()
                     .setNumber(number)
                     .build());
