@@ -1,7 +1,11 @@
 package com.github.hpchugo.calculator.server;
 
 import com.proto.calculator.*;
+import io.grpc.Internal;
 import io.grpc.stub.StreamObserver;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServiceImplBase {
@@ -20,5 +24,35 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
             }
         }
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<ComputeAverageRequest> computeAverage(StreamObserver<ComputeAverageResponse> responseObserver) {
+        List<Integer> result = new ArrayList<>();
+
+
+        return new StreamObserver<>() {
+
+            @Override
+            public void onNext(ComputeAverageRequest value) {
+                int number = value.getNumber();
+                System.out.println(number);
+                result.add(number);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onNext(ComputeAverageResponse
+                        .newBuilder()
+                        .setAverage(result.stream().mapToDouble(a -> a).average().getAsDouble())
+                        .build());
+                responseObserver.onCompleted();
+            }
+        };
     }
 }
