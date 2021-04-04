@@ -1,7 +1,6 @@
 package com.github.hpchugo.calculator.server;
 
 import com.proto.calculator.*;
-import io.grpc.Internal;
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;
@@ -35,9 +34,7 @@ public class CalculatorServiceImpl extends CalculatorServiceGrpc.CalculatorServi
 
             @Override
             public void onNext(ComputeAverageRequest value) {
-                int number = value.getNumber();
-                System.out.println(number);
-                result.add(number);
+                result.add(value.getNumber());
             }
 
             @Override

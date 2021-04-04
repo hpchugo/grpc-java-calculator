@@ -5,6 +5,8 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -64,25 +66,13 @@ public class CalculatorClient {
             }
         });
 
-        System.out.println("Sending number #1");
-        requestObserver.onNext(ComputeAverageRequest.newBuilder()
-                .setNumber(3)
-                .build());
-
-        System.out.println("Sending number #2");
-        requestObserver.onNext(ComputeAverageRequest.newBuilder()
-                .setNumber(21)
-                .build());
-
-        System.out.println("Sending number #4");
-        requestObserver.onNext(ComputeAverageRequest.newBuilder()
-                .setNumber(15)
-                .build());
-
-        System.out.println("Sending number #3");
-        requestObserver.onNext(ComputeAverageRequest.newBuilder()
-                .setNumber(9)
-                .build());
+        List<Integer> numbers = Arrays.asList(3, 21, 15, 9);
+        numbers.forEach(number -> {
+            System.out.println(String.format("Sending to server number %d", number));
+            requestObserver.onNext(ComputeAverageRequest.newBuilder()
+                    .setNumber(number)
+                    .build());
+        });
 
         requestObserver.onCompleted();
         try {
