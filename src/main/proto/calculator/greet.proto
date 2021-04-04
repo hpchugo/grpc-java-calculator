@@ -6,7 +6,7 @@ option java_package = "com.proto.calculator";
 option java_multiple_files = true;
 
 message Calculator{
-  int32 factor = 1;
+  int32 number = 1;
 }
 
 message CalculatorManyTimesRequest{
@@ -25,10 +25,18 @@ message ComputeAverageResponse {
   double average = 1;
 }
 
+message FindMaximumRequest{
+  int32 number = 1;
+}
+
+message FindMaximumResponse{
+  int32 maximum = 1;
+}
 service CalculatorService{
   //Server Streaming
   rpc CalculatorManyTime(CalculatorManyTimesRequest) returns (stream CalculatorManyTimesResponse){};
 
   rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
 
+  rpc FindMaximum(stream FindMaximumRequest) returns (stream FindMaximumResponse){};
 }

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static java.lang.System.out;
+
 public class CalculatorClient {
     public static void main(String[] args) {
         CalculatorClient calculatorClient = new CalculatorClient();
@@ -26,7 +28,8 @@ public class CalculatorClient {
         System.out.println("Creating stub");
 
         //doFactorStreamingServerCall(channel);
-        doAverageClientStreamingCall(channel);
+        //doAverageClientStreamingCall(channel);
+        doFindMaximumBiDirectionalStreamingCall(channel);
         System.out.println("Shutting down channel");
         channel.shutdown();
 
@@ -37,7 +40,7 @@ public class CalculatorClient {
 
         CalculatorManyTimesRequest calculatorManyTimesRequest = CalculatorManyTimesRequest.newBuilder()
                 .setCalculator(Calculator.newBuilder()
-                        .setFactor(2000001))
+                        .setNumber(2000001))
                 .build();
 
         calculatorClient.calculatorManyTime(calculatorManyTimesRequest)
@@ -81,4 +84,49 @@ public class CalculatorClient {
             e.printStackTrace();
         }
     }
+
+    private void doFindMaximumBiDirectionalStreamingCall(ManagedChannel channel) {
+        //created a greet service client (blocking - asynchronous)
+        CalculatorServiceGrpc.CalculatorServiceStub asyncClient = CalculatorServiceGrpc.newStub(channel);
+        CountDownLatch latch = new CountDownLatch(1);
+        StreamObserver<FindMaximumRequest> requestObserver = asyncClient.findMaximum(new StreamObserver<FindMaximumResponse>() {
+            @Override
+            public void onNext(FindMaximumResponse value) {
+                out.printf("Maximum value at the moment: %d\n", value.getMaximum());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                out.println("Server has completed something");
+            }
+        });
+
+
+        Arrays.asList(1,5,3,6,2,20).forEach(
+                number -> {
+                    out.printf("Sending: %d\n", number);
+                    requestObserver.onNext(FindMaximumRequest.newBuilder()
+                            .setNumber(number)
+                            .build());
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+        );
+        requestObserver.onCompleted();
+        try {
+            latch.await(3L, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
